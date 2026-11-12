@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MTD · Robot Bạn Thân</title>
+  <meta name="description" content="MTD — robot cơ khí ảo biết nhìn, nghe, nói, hát, kể chuyện và an ủi bạn." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="starfield" aria-hidden="true"></div>
+
+  <!-- MÀN HÌNH CHỜ: một cú nhấn mở khoá âm thanh, giọng nói, micro và camera -->
+  <div id="boot-screen" class="boot-screen">
+    <div class="boot-core">
+      <div class="boot-ring"><div class="boot-ring inner"></div></div>
+      <h1 class="boot-logo">MTD</h1>
+      <p class="boot-sub">COMPANION UNIT · v1.0</p>
+      <p class="boot-cta">Nhấn bất kỳ đâu hoặc Cấp quyền Camera để khởi động nguồn cho MTD</p>
+      <ul class="boot-checks">
+        <li>👁 Camera — để MTD nhìn thấy và chào cậu</li>
+        <li>🎙 Micro — để MTD nghe cậu nói</li>
+        <li>🔊 Loa — để MTD trò chuyện và hát</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="app">
+    <header class="topbar">
+      <div class="brand"><span class="brand-logo">MTD</span><span class="brand-sub">// robot bạn thân</span><span class="version">v4.4 · hát rõ lời + nghe tốt hơn</span></div>
+      <div class="chips">
+        <span class="chip" id="st-cam"><i></i><span class="chip-text">Camera</span></span>
+        <span class="chip" id="st-mic"><i></i><span class="chip-text">Micro</span></span>
+        <span class="chip" id="st-brain"><i></i><span class="chip-text">Não</span></span>
+        <span class="chip" id="st-voice"><i></i><span class="chip-text">Giọng</span></span>
+      </div>
+      <div id="brain-loader" class="brain-loader" title="Đang tải não AI"><div id="brain-progress"></div></div>
+      <button id="gear" class="gear" title="Cài đặt (Ctrl + , hoặc Alt + S)" aria-label="Cài đặt">⚙</button>
+    </header>
+
+    <main class="layout">
+      <section class="stage-wrap">
+        <div class="stage-glow" aria-hidden="true"></div>
+        <div id="robot-stage" class="robot-stage"></div>
+        <div id="visualizer" class="visualizer" aria-hidden="true"></div>
+        <div id="karaoke" class="karaoke">
+          <div id="karaoke-title" class="karaoke-title"></div>
+          <div id="karaoke-lyric" class="karaoke-lyric"></div>
+        </div>
+        <p id="subtitle" class="subtitle" aria-live="polite"></p>
+        <p id="heard" class="heard"></p>
+      </section>
+
+      <aside class="chat-panel">
+        <div class="panel-head">
+          <span>KÊNH LIÊN LẠC</span>
+          <small>Cứ nói tự nhiên — MTD luôn lắng nghe</small>
+        </div>
+        <div id="chat-log" class="chat-log"></div>
+        <form id="chat-form" class="chat-form" autocomplete="off">
+          <input id="chat-input" type="text" placeholder="Hoặc gõ tin nhắn ở đây khi xung quanh ồn ào..." />
+          <button type="submit" aria-label="Gửi">➤</button>
+        </form>
+        <p class="hint">Cứ nói chuyện tự nhiên về bất cứ điều gì. Lệnh đặc biệt: “bắn laze” · “biến hình” · “hát bài về…” · “nhảy hip hop” · “lộn vòng” · “lộn ngang” · “chạy một vòng” · “sang trái/phải” · “bắt tay” · “xoa đầu” · “bắt chước tớ” · “nhớ mặt tớ” · “tớ là ai” · “ru tớ ngủ” · “dừng lại”</p>
+      </aside>
+    </main>
+  </div>
+
+  <!-- HUD CAMERA: "Mắt của MTD" -->
+  <div id="vision-hud" class="vision-hud">
+    <button id="hud-toggle" class="hud-head" title="Thu nhỏ / mở rộng">
+      <span>◉ MTD-EYE</span><span id="hud-presence" class="hud-presence">○</span>
+    </button>
+    <div class="hud-view">
+      <video id="hud-video" muted playsinline></video>
+      <canvas id="hud-canvas"></canvas>
+      <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+    </div>
+    <div class="hud-foot">
+      <span id="hud-mood">Cảm xúc: —</span>
+      <span id="hud-status">Chờ khởi động</span>
+    </div>
+  </div>
+
+  <!-- CÀI ĐẶT -->
+  <div id="settings" class="modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+    <div class="modal-card">
+      <h2 id="settings-title">⚙ Bảng điều khiển MTD</h2>
+
+      <label>Bộ não AI
+        <select id="set-provider">
+          <option value="local">🧠 AI cục bộ trong trình duyệt — miễn phí, không cần key</option>
+          <option value="ollama">💻 Ollama trên máy tính — miễn phí, mô hình lớn hơn</option>
+          <option value="claude">Anthropic Claude (cần API key)</option>
+          <option value="openai">OpenAI (cần API key)</option>
+          <option value="gemini">Google Gemini (cần API key)</option>
+          <option value="offline">Chỉ kịch bản có sẵn (không AI)</option>
+        </select>
+      </label>
+
+      <div id="ai-fields">
+        <label id="key-field">API Key
+          <input id="set-key" type="password" placeholder="Dán API key vào đây" />
+        </label>
+        <label id="ollama-field">Địa chỉ Ollama
+          <input id="set-ollama" type="text" placeholder="http://localhost:11434" />
+        </label>
+        <label>Mô hình
+          <input id="set-model" type="text" list="model-list" />
+          <datalist id="model-list"></datalist>
+        </label>
+        <p id="local-note" class="note">💾 Mô hình được tải một lần (1–5 GB tùy loại) và lưu trong trình duyệt. Máy có GPU rời 4 GB nên dùng bản 3B.</p>
+        <p id="key-note" class="note">🔒 API key chỉ lưu trong trình duyệt của cậu (localStorage) và gửi thẳng tới nhà cung cấp AI. Đừng dùng máy công cộng.</p>
+      </div>
+
+      <label>Tên của cậu (MTD sẽ gọi tên)
+        <input id="set-name" type="text" placeholder="Ví dụ: An" />
+      </label>
+      <label>Kể MTD nghe về cậu (sở thích, đang học gì, điều muốn MTD nhớ...)
+        <textarea id="set-about" rows="3" placeholder="Ví dụ: Tớ học lớp 11, thích bóng đá và lập trình Python, hay bị áp lực trước kỳ thi."></textarea>
+      </label>
+      <div class="face-box">
+        <span>🧑 Khuôn mặt MTD đã nhớ: <b id="face-list">chưa có</b></span>
+        <button id="set-faces-clear" class="ghost" type="button">Quên hết khuôn mặt</button>
+      </div>
+      <div class="face-box">
+        <span>🧠 Trí nhớ dài hạn: MTD nhớ những điều cậu kể (lưu trong trình duyệt)</span>
+        <button id="set-memory-clear" class="ghost" type="button">Xoá trí nhớ</button>
+      </div>
+      <p class="note">Nói “nhớ mặt tớ” để MTD quét lại khuôn mặt chủ nhân. Người lạ được MTD hỏi tên rồi tự ghi nhớ. Dữ liệu khuôn mặt chỉ lưu trong trình duyệt này.</p>
+
+      <label>Bộ đọc giọng nói
+        <select id="set-engine">
+          <option value="auto">Tự động — ưu tiên giọng Natural của Edge, không có thì dùng giọng AI Piper</option>
+          <option value="neural">Giọng AI Piper (offline, nhép miệng theo âm thanh thật)</option>
+          <option value="browser">Giọng có sẵn của trình duyệt</option>
+        </select>
+      </label>
+      <label>Kiểu hát
+        <select id="set-sing">
+          <option value="clear">Hát rõ lời bằng giọng tự nhiên (Hoài My / Nam Minh) — khuyên dùng</option>
+          <option value="notes">Hát đúng nốt nhạc bằng giọng AI Piper (giọng máy, kém rõ lời hơn)</option>
+        </select>
+      </label>
+      <label>Nhận dạng giọng nói (tai nghe của MTD)
+        <select id="set-stt">
+          <option value="auto">PhoWhisper chạy trên máy — chính xác hơn với tiếng Việt (cần mở bằng start-mtd.bat)</option>
+          <option value="browser">Dịch vụ của trình duyệt (Edge/Chrome, cần mạng)</option>
+        </select>
+      </label>
+      <label>Giọng của trình duyệt
+        <select id="set-voice"></select>
+      </label>
+      <p class="note">🎙 Giọng AI: Piper TTS (MIT) · giọng vi_VN-vais1000 huấn luyện từ dữ liệu VAIS-1000 (CC BY 4.0).</p>
+      <div class="row">
+        <label>Tốc độ: <b id="rate-val">1</b>
+          <input id="set-rate" type="range" min="0.6" max="1.5" step="0.05" />
+        </label>
+        <label>Cao độ: <b id="pitch-val">1</b>
+          <input id="set-pitch" type="range" min="0.5" max="2" step="0.05" />
+        </label>
+      </div>
+
+      <div class="modal-actions">
+        <button id="set-clear" class="ghost" type="button">Xoá lịch sử</button>
+        <button id="set-test" class="ghost" type="button">Nghe thử</button>
+        <button id="set-close" class="ghost" type="button">Đóng</button>
+        <button id="set-save" class="primary" type="button">Lưu</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+# Thư viện để huấn luyện lại bộ phân loại của MTD (ml/train_classifiers.py)
+numpy
+pandas
+pyarrow
+scikit-learn
+onnxruntime
+tokenizers

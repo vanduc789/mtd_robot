@@ -1,0 +1,752 @@
+/* =====================================================================
+   MTD — Sci-Fi nhẹ nhàng, hiện đại nhưng ấm áp
+   ===================================================================== */
+
+/* Đăng ký biến màu LED để trình duyệt chuyển màu mượt giữa các trạng thái */
+@property --led {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #3de8ff;
+}
+
+:root {
+  --bg-0: #050914;
+  --panel: rgba(13, 22, 44, 0.72);
+  --panel-border: rgba(90, 200, 255, 0.2);
+  --text: #e6f1ff;
+  --muted: #8ea3c4;
+  --accent: #3de8ff;
+  --violet: #a77bff;
+  --warm: #ff9a6b;
+  --pink: #ff7aa8;
+  --ok: #5cffb0;
+  --bad: #ff6b7d;
+  --radius: 18px;
+  font-family: "Be Vietnam Pro", system-ui, sans-serif;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+
+body {
+  color: var(--text);
+  background:
+    radial-gradient(1100px 700px at 30% 15%, #10244d 0%, transparent 60%),
+    radial-gradient(900px 600px at 95% 95%, #2b1247 0%, transparent 55%),
+    var(--bg-0);
+  overflow: hidden;
+  transition: background 2s ease;
+}
+
+/* Lưới công nghệ mờ phía sau */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(61, 232, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(61, 232, 255, 0.05) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(circle at 40% 45%, #000 0%, transparent 75%);
+  pointer-events: none;
+  transition: opacity 2s;
+}
+
+/* Lớp ánh cam ấm khi MTD an ủi */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 38% 45%, rgba(255, 140, 100, 0.22), transparent 60%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.5s;
+}
+body.warm::after { opacity: 1; }
+
+button { font: inherit; color: inherit; cursor: pointer; }
+
+/* ---------------------------------------------------------------------
+   MÀN HÌNH CHỜ
+   --------------------------------------------------------------------- */
+.boot-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 4px),
+    radial-gradient(circle at 50% 45%, #0d1d3d, #02040a 70%);
+  cursor: pointer;
+  transition: opacity 1s ease, filter 1s ease;
+}
+.boot-screen.powering { opacity: 0; filter: brightness(3); pointer-events: none; }
+.boot-core { text-align: center; padding: 16px; max-width: 560px; }
+.boot-ring {
+  width: 150px; height: 150px; margin: 0 auto -110px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-top-color: var(--accent);
+  border-right-color: rgba(61, 232, 255, 0.3);
+  animation: spin 2.4s linear infinite;
+  display: grid; place-items: center;
+}
+.boot-ring.inner {
+  width: 110px; height: 110px; margin: 0;
+  border-top-color: var(--violet);
+  animation-duration: 1.6s;
+  animation-direction: reverse;
+}
+.boot-logo {
+  font-family: Orbitron, sans-serif;
+  font-weight: 900;
+  font-size: 56px;
+  letter-spacing: 6px;
+  margin: 0;
+  height: 70px;
+  color: #fff;
+  text-shadow: 0 0 18px var(--accent), 0 0 40px rgba(61, 232, 255, 0.5);
+}
+.boot-sub { font-family: Orbitron, sans-serif; color: var(--muted); letter-spacing: 4px; font-size: 12px; margin: 48px 0 26px; }
+.boot-cta {
+  font-size: 18px; font-weight: 600; margin: 0 0 22px;
+  animation: pulse-text 1.6s ease-in-out infinite;
+}
+.boot-checks { list-style: none; padding: 0; margin: 0; color: var(--muted); font-size: 14px; line-height: 1.9; }
+
+/* ---------------------------------------------------------------------
+   KHUNG CHÍNH
+   --------------------------------------------------------------------- */
+.app { position: relative; z-index: 1; display: grid; grid-template-rows: auto 1fr; height: 100vh; }
+
+.topbar {
+  display: flex; align-items: center; gap: 16px;
+  padding: 14px 20px;
+  transition: opacity 2s;
+}
+.brand { display: flex; align-items: baseline; gap: 10px; }
+.brand-logo { font-family: Orbitron, sans-serif; font-weight: 900; font-size: 24px; letter-spacing: 3px; text-shadow: 0 0 12px var(--accent); }
+.brand-sub { color: var(--muted); font-size: 13px; }
+.version {
+  font-size: 11px; padding: 2px 8px; border-radius: 999px;
+  color: #041022; background: linear-gradient(135deg, var(--accent), var(--violet)); font-weight: 600;
+}
+.chips { display: flex; gap: 8px; flex-wrap: wrap; margin-left: auto; }
+.chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 5px 11px; border-radius: 999px;
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--panel-border);
+}
+.chip i { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+.chip[data-level="ok"] i { background: var(--ok); box-shadow: 0 0 8px var(--ok); }
+.chip[data-level="info"] i { background: #ffd36b; }
+.chip[data-level="bad"] i { background: var(--bad); }
+.gear {
+  width: 38px; height: 38px; border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04); border: 1px solid var(--panel-border);
+  font-size: 18px; opacity: 0.6; transition: opacity 0.2s, transform 0.4s;
+}
+.gear:hover { opacity: 1; transform: rotate(60deg); }
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr minmax(320px, 400px);
+  gap: 20px;
+  padding: 0 20px 20px;
+  min-height: 0;
+}
+
+/* ---------------------------------------------------------------------
+   SÂN KHẤU ROBOT
+   --------------------------------------------------------------------- */
+.stage-wrap {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 0;
+}
+.stage-glow {
+  position: absolute; width: 520px; height: 520px; max-width: 90%;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 18%, transparent), transparent 65%);
+  filter: blur(10px);
+  pointer-events: none;
+}
+.robot-stage { position: relative; width: min(52vh, 400px); aspect-ratio: 400 / 540; }
+.robot, .robot-svg { width: 100%; height: 100%; display: block; overflow: visible; }
+
+.visualizer { display: flex; align-items: center; gap: 4px; height: 36px; margin-top: 2px; }
+.visualizer span {
+  width: 5px; height: 100%; border-radius: 3px;
+  background: linear-gradient(var(--violet), var(--accent));
+  transform: scaleY(0.1);
+  transition: transform 0.08s linear;
+  opacity: 0.8;
+}
+
+.subtitle {
+  min-height: 3em; max-width: 680px; margin: 8px 16px 0;
+  text-align: center; font-size: 17px; line-height: 1.5;
+  opacity: 0; transform: translateY(6px);
+  transition: opacity 0.4s, transform 0.4s;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+}
+.subtitle.show { opacity: 1; transform: none; }
+.heard { min-height: 1.4em; margin: 4px 0 0; color: var(--accent); font-size: 14px; opacity: 0.85; }
+
+/* Karaoke */
+.karaoke {
+  position: absolute; top: 2%; left: 50%; transform: translate(-50%, -10px);
+  text-align: center; opacity: 0; pointer-events: none;
+  transition: opacity 0.4s, transform 0.4s;
+  width: min(92%, 640px);
+}
+.karaoke.show { opacity: 1; transform: translate(-50%, 0); }
+.karaoke-title { font-family: Orbitron, sans-serif; font-size: 13px; letter-spacing: 3px; color: var(--violet); margin-bottom: 6px; }
+.karaoke-lyric { font-size: clamp(20px, 3vw, 30px); font-weight: 700; }
+.karaoke-lyric .word { color: rgba(230, 241, 255, 0.35); transition: color 0.15s, text-shadow 0.15s; }
+.karaoke-lyric .word.on { color: #fff; text-shadow: 0 0 14px #d77bff, 0 0 30px #d77bff; }
+
+/* Hiệu ứng bay lên: tim, nốt nhạc, Zzz */
+.particle {
+  position: absolute; z-index: 5; pointer-events: none;
+  animation: float-up 2.8s ease-out forwards;
+  font-weight: 700;
+}
+.p-heart { color: var(--pink); text-shadow: 0 0 10px rgba(255, 122, 168, 0.8); }
+.p-note { color: #d77bff; text-shadow: 0 0 10px rgba(215, 123, 255, 0.8); }
+.p-z { color: #9fb4ff; font-family: Orbitron, sans-serif; text-shadow: 0 0 10px rgba(120, 150, 255, 0.8); }
+
+/* ---------------------------------------------------------------------
+   ROBOT SVG — màu LED và hình dạng theo trạng thái
+   --------------------------------------------------------------------- */
+.robot { --led: #3de8ff; transition: --led 0.8s ease; }
+.robot[data-state="greeting"] { --led: #5cffb0; }
+.robot[data-state="singing"] { --led: #d77bff; }
+.robot[data-state="calculating"] { --led: #39ff6a; }
+.robot[data-state="comforting"] { --led: #ff9a7a; }
+.robot[data-state="sleeping"] { --led: #5b74ff; }
+
+.led-fill { fill: var(--led); }
+.led-stroke { fill: none; stroke: var(--led); stroke-width: 7; stroke-linecap: round; }
+.led-stroke.thin { stroke-width: 5; }
+.calc-ring { stroke-width: 4; stroke-dasharray: 22 10; }
+.chest-ring { stroke-width: 3; opacity: 0.7; }
+.matrix-row { font-family: "Courier New", monospace; font-size: 13px; fill: var(--led); opacity: 0.35; }
+
+/* Mặc định ẩn mọi kiểu mắt / miệng, chỉ hiện kiểu đúng trạng thái */
+.eye, .mouth { display: none; }
+.robot[data-state="idle"] .eye-round,
+.robot[data-state="talking"] .eye-round { display: inline; }
+.robot[data-state="greeting"] .eye-happy,
+.robot[data-state="singing"] .eye-happy { display: inline; }
+.robot[data-state="comforting"] .eye-heart { display: inline; }
+.robot[data-state="calculating"] .eye-calc { display: inline; }
+.robot[data-state="sleeping"] .eye-sleep { display: inline; }
+
+.robot[data-speaking="false"] .mouth-smile { display: inline; }
+.robot[data-speaking="false"][data-state="sleeping"] .mouth-smile,
+.robot[data-speaking="false"][data-state="calculating"] .mouth-smile { display: none; }
+.robot[data-speaking="false"][data-state="sleeping"] .mouth-flat,
+.robot[data-speaking="false"][data-state="calculating"] .mouth-flat { display: inline; }
+.robot[data-speaking="true"] .mouth-bars { display: inline; }
+
+.matrix { display: none; }
+.robot[data-state="calculating"] .matrix { display: inline; }
+
+.cheeks { opacity: 0; transition: opacity 0.6s; }
+.robot[data-state="greeting"] .cheeks,
+.robot[data-state="comforting"] .cheeks,
+.robot[data-state="singing"] .cheeks { opacity: 0.55; }
+
+/* Hoạt ảnh — dùng transform-box để xoay đúng tâm từng chi tiết SVG */
+.eye-round, .eye-heart, .calc-ring, .arm, .head, .robot-sway, .robot-breath, .robot-shadow {
+  transform-box: fill-box;
+}
+.eye-round { transform-origin: center; transition: transform 0.08s; }
+.robot.blink .eye-round { transform: scaleY(0.1); }
+.eye-heart { transform-origin: center; animation: heartbeat 1s ease-in-out infinite; }
+.calc-ring { transform-origin: center; animation: spin 0.9s linear infinite; }
+
+.robot-breath { animation: breathe 4s ease-in-out infinite; }
+.robot-shadow { fill: rgba(0, 0, 0, 0.45); transform-origin: center; animation: shadow 4s ease-in-out infinite; }
+.robot-sway { transform-origin: 50% 100%; }
+.head { transform-origin: 50% 100%; transition: transform 1s ease; }
+
+/* Tay: xoay quanh khớp vai (toạ độ trong viewBox) */
+.arm { transform-box: view-box; transition: transform 0.6s ease; }
+.arm-left { transform-origin: 114px 322px; animation: arm-idle-left 5s ease-in-out infinite; }
+.arm-right { transform-origin: 286px 322px; animation: arm-idle-right 5s ease-in-out infinite; }
+
+.antenna-bulb { animation: glow-pulse 2s ease-in-out infinite; }
+.chest-core { animation: glow-pulse 2.6s ease-in-out infinite; }
+.chest-bit:nth-of-type(1) { animation: blink-bit 1.2s infinite; }
+.chest-bit { animation: blink-bit 1.6s infinite; }
+
+/* greeting: vẫy tay phải */
+.robot[data-state="greeting"] .arm-right { animation: wave 0.9s ease-in-out infinite; }
+/* talking: tay đưa nhẹ như đang diễn giải */
+.robot[data-state="talking"] .arm-left { animation: gesture-left 2.2s ease-in-out infinite; }
+/* singing: lắc lư + hai tay đung đưa */
+.robot[data-state="singing"] .robot-sway { animation: sway 1.2s ease-in-out infinite; }
+.robot[data-state="singing"] .arm-left { animation: dance-left 0.6s ease-in-out infinite alternate; }
+.robot[data-state="singing"] .arm-right { animation: dance-right 0.6s ease-in-out infinite alternate; }
+/* calculating: tay đưa lên "suy nghĩ" */
+.robot[data-state="calculating"] .arm-right { animation: none; transform: rotate(-115deg); }
+.robot[data-state="calculating"] .antenna-bulb { animation: glow-pulse 0.35s ease-in-out infinite; }
+/* comforting: hai tay ôm vào trong */
+.robot[data-state="comforting"] .arm-left { animation: none; transform: rotate(-28deg); }
+.robot[data-state="comforting"] .arm-right { animation: none; transform: rotate(28deg); }
+.robot[data-state="comforting"] .chest-core { animation: heartbeat 1s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+/* sleeping: gục đầu, thở chậm */
+.robot[data-state="sleeping"] .head { transform: rotate(5deg) translateY(10px); }
+.robot[data-state="sleeping"] .robot-breath { animation-duration: 6.5s; }
+.robot[data-state="sleeping"] .arm { animation: none; transform: rotate(0deg); }
+.robot[data-state="sleeping"] .antenna-bulb { animation: glow-pulse 4s ease-in-out infinite; opacity: 0.6; }
+
+/* ---------------------------------------------------------------------
+   ĐỘNG TÁC THEO LỆNH (data-gesture) — dùng !important để thắng các hoạt ảnh trạng thái và chế độ bắt chước.
+   Góc xoay: tay buông xuống = 0°. Tay TRÁI xoay dương = dang ra/giơ lên; tay PHẢI xoay âm = dang ra/giơ lên.
+   --------------------------------------------------------------------- */
+.robot[data-gesture] .arm { transition: transform 0.3s ease; }
+
+/* Bắt tay: tay phải đưa ra trước và lắc lên xuống */
+.robot[data-gesture="handshake"] .arm-right { animation: g-handshake 0.45s ease-in-out infinite !important; }
+/* Xoa đầu: tay phải duỗi dài kiểu ống lồng (scaleY) để với tới đỉnh đầu */
+.robot[data-gesture="pat-head"] .arm-right { animation: g-pat 0.6s ease-in-out infinite !important; }
+.robot[data-gesture="pat-head"] .head { animation: g-pat-head 0.6s ease-in-out infinite !important; }
+/* Đập tay */
+.robot[data-gesture="high-five"] .arm-right { animation: g-high-five 0.8s ease-out 2 !important; }
+/* Vẫy tay */
+.robot[data-gesture="wave"] .arm-right { animation: wave 0.7s ease-in-out infinite !important; }
+/* Vỗ tay: hai tay khép vào giữa ngực rồi mở ra */
+.robot[data-gesture="clap"] .arm-left { animation: g-clap-left 0.35s ease-in-out infinite !important; }
+.robot[data-gesture="clap"] .arm-right { animation: g-clap-right 0.35s ease-in-out infinite !important; }
+/* Giơ hai tay */
+.robot[data-gesture="arms-up"] .arm-left { animation: g-up-left 0.5s ease-in-out infinite alternate !important; }
+.robot[data-gesture="arms-up"] .arm-right { animation: g-up-right 0.5s ease-in-out infinite alternate !important; }
+/* Chào kiểu quân đội: tay phải đưa lên ngang trán */
+.robot[data-gesture="salute"] .arm-right { animation: none !important; transform: rotate(-170deg) scaleY(1.35) !important; }
+.robot[data-gesture="salute"] .head { animation: none !important; transform: rotate(-3deg) !important; }
+/* Ôm: hai tay vòng vào trong */
+.robot[data-gesture="hug"] .arm-left { animation: g-hug-left 1.2s ease-in-out infinite alternate !important; }
+.robot[data-gesture="hug"] .arm-right { animation: g-hug-right 1.2s ease-in-out infinite alternate !important; }
+/* Gật đầu / lắc đầu */
+.robot[data-gesture="nod"] .head { animation: g-nod 0.45s ease-in-out infinite !important; }
+.robot[data-gesture="shake-head"] .head { animation: g-shake 0.4s ease-in-out infinite !important; }
+/* Nhảy */
+.robot[data-gesture="dance"] .robot-sway { animation: sway 0.6s ease-in-out infinite !important; }
+.robot[data-gesture="dance"] .robot-breath { animation: g-bounce 0.3s ease-in-out infinite !important; }
+.robot[data-gesture="dance"] .arm-left { animation: dance-left 0.3s ease-in-out infinite alternate !important; }
+.robot[data-gesture="dance"] .arm-right { animation: dance-right 0.3s ease-in-out infinite alternate !important; }
+/* Suy nghĩ: tay chống cằm, đầu nghiêng */
+/* Từ vai phải (286,322) tới cằm (~250,262): vector ngắn hơn cánh tay -> thu ngắn tay (scaleY) và xoay vắt qua ngực */
+.robot[data-gesture="think"] .arm-right { animation: none !important; transform: rotate(149deg) scaleY(0.47) !important; }
+.robot[data-gesture="think"] .head { animation: none !important; transform: rotate(5deg) !important; }
+
+/* ---------------------------------------------------------------------
+   XẤU HỔ (state "shy"): LED hồng, mắt "> <", má đỏ ửng, miệng lượn sóng,
+   cúi đầu nghiêng sang một bên, tay phải gãi gáy, tay trái co vào ngực.
+   --------------------------------------------------------------------- */
+.robot[data-state="shy"] { --led: #ff7aa8; }
+.robot[data-state="shy"] .eye-shy { display: inline; }
+.robot[data-speaking="false"][data-state="shy"] .mouth-smile { display: none; }
+.robot[data-speaking="false"][data-state="shy"] .mouth-wavy { display: inline; }
+.robot[data-state="shy"] .cheeks { opacity: 1; animation: blush 1.4s ease-in-out infinite; }
+.blush-lines { display: none; stroke: #ff3d7f; stroke-width: 2.5; stroke-linecap: round; }
+.robot[data-state="shy"] .blush-lines { display: inline; }
+.robot[data-state="shy"] .head { transform: rotate(-7deg) translateY(6px); }
+.robot[data-state="shy"] .arm-right { animation: g-scratch 0.5s ease-in-out infinite; }
+.robot[data-state="shy"] .arm-left { animation: g-fidget 0.9s ease-in-out infinite alternate; }
+.robot[data-state="shy"] .robot-sway { animation: g-shy-sway 1.6s ease-in-out infinite; }
+@keyframes blush { 0%, 100% { opacity: 0.75; } 50% { opacity: 1; } }
+@keyframes g-scratch { 0%, 100% { transform: rotate(-158deg) scaleY(1.32); } 50% { transform: rotate(-150deg) scaleY(1.28); } }
+@keyframes g-fidget { from { transform: rotate(-24deg); } to { transform: rotate(-34deg); } }
+@keyframes g-shy-sway { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+
+/* ---------------------------------------------------------------------
+   NHẢY HIP-HOP (data-gesture="hiphop" + data-move đổi theo từng phách nhạc)
+   --beat = độ dài một phách, do robot-avatar.js đặt theo tốc độ bài.
+   --------------------------------------------------------------------- */
+.robot[data-gesture="hiphop"] { --led: #ffd23d; }
+.robot[data-gesture="hiphop"] .eye-round,
+.robot[data-gesture="hiphop"] .eye-heart,
+.robot[data-gesture="hiphop"] .eye-calc { display: none; }
+.robot[data-gesture="hiphop"] .eye-happy { display: inline; }
+/* Gật đầu và nhún người đúng nhịp */
+.robot[data-gesture="hiphop"] .head { animation: g-nod var(--beat, 0.6s) ease-in-out infinite !important; }
+.robot[data-gesture="hiphop"] .robot-breath { animation: g-bounce var(--beat, 0.6s) ease-in-out infinite !important; }
+.robot[data-gesture="hiphop"] .chest-core { animation: heartbeat var(--beat, 0.6s) ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+/* Động tác "popping": tay giật nhanh tới vị trí rồi dừng khựng lại */
+.robot[data-gesture="hiphop"] .arm { animation: none !important; transition: transform 0.09s cubic-bezier(0.2, 1.6, 0.4, 1) !important; }
+.robot[data-gesture="hiphop"] .robot-sway { animation: none !important; transition: transform 0.12s ease-out; }
+
+.robot[data-move="pop-left"] .arm-left { transform: rotate(90deg) !important; }
+.robot[data-move="pop-left"] .arm-right { transform: rotate(-15deg) !important; }
+.robot[data-move="pop-left"] .robot-sway { transform: rotate(-6deg); }
+.robot[data-move="pop-right"] .arm-left { transform: rotate(15deg) !important; }
+.robot[data-move="pop-right"] .arm-right { transform: rotate(-90deg) !important; }
+.robot[data-move="pop-right"] .robot-sway { transform: rotate(6deg); }
+/* Khoanh tay trước ngực kiểu "ngầu" */
+.robot[data-move="cross"] .arm-left { transform: rotate(-38deg) scaleY(0.85) !important; }
+.robot[data-move="cross"] .arm-right { transform: rotate(38deg) scaleY(0.85) !important; }
+.robot[data-move="cross"] .robot-sway { transform: translateY(6px); }
+/* Chỉ tay chéo lên trời */
+.robot[data-move="point-left"] .arm-left { transform: rotate(135deg) scaleY(1.15) !important; }
+.robot[data-move="point-left"] .arm-right { transform: rotate(-25deg) !important; }
+.robot[data-move="point-left"] .robot-sway { transform: rotate(-8deg); }
+.robot[data-move="point-right"] .arm-left { transform: rotate(25deg) !important; }
+.robot[data-move="point-right"] .arm-right { transform: rotate(-135deg) scaleY(1.15) !important; }
+.robot[data-move="point-right"] .robot-sway { transform: rotate(8deg); }
+/* Gồng tay khoe "cơ bắp" kim loại */
+.robot[data-move="flex"] .arm-left { transform: rotate(118deg) scaleY(0.7) !important; }
+.robot[data-move="flex"] .arm-right { transform: rotate(-118deg) scaleY(0.7) !important; }
+.robot[data-move="flex"] .robot-sway { transform: scale(1.04); }
+/* Sóng tay kiểu robot: hai tay vung xen kẽ thật nhanh */
+.robot[data-move="wave-arms"] .arm-left { animation: dance-left calc(var(--beat, 0.6s) / 2) ease-in-out infinite alternate !important; }
+.robot[data-move="wave-arms"] .arm-right { animation: dance-right calc(var(--beat, 0.6s) / 2) ease-in-out infinite alternate !important; }
+/* Xoay người (lật trái-phải) */
+.robot[data-move="spin"] .robot-sway { animation: g-spin var(--beat, 0.6s) ease-in-out 1 !important; }
+.robot[data-move="spin"] .arm-left { transform: rotate(70deg) !important; }
+.robot[data-move="spin"] .arm-right { transform: rotate(-70deg) !important; }
+/* Hạ thấp người, hai tay chống xuống */
+.robot[data-move="drop"] .robot-sway { transform: translateY(18px) scaleY(0.94); }
+.robot[data-move="drop"] .arm-left { transform: rotate(35deg) !important; }
+.robot[data-move="drop"] .arm-right { transform: rotate(-35deg) !important; }
+/* Tạo dáng kết bài: một tay chỉ trời, đầu nghiêng */
+.robot[data-move="freeze"] .arm-left { transform: rotate(-30deg) !important; }
+.robot[data-move="freeze"] .arm-right { transform: rotate(-165deg) scaleY(1.2) !important; }
+.robot[data-move="freeze"] .robot-sway { transform: rotate(7deg); }
+.robot[data-move="freeze"] .head { animation: none !important; transform: rotate(-8deg) !important; }
+@keyframes g-spin { 0% { transform: scaleX(1); } 50% { transform: scaleX(-1); } 100% { transform: scaleX(1); } }
+
+/* ---------------------------------------------------------------------
+   DI CHUYỂN: .mover trượt ngang (JS), .flipper nhảy/lộn (Web Animations API)
+   --------------------------------------------------------------------- */
+.mover, .flipper { width: 100%; height: 100%; }
+.mover { will-change: transform; }
+.flipper { transform-origin: 50% 60%; will-change: transform; }
+.wheel { transform-box: fill-box; transform-origin: center; }
+.robot[data-rolling="right"] .wheel { animation: wheel-spin 0.45s linear infinite; }
+.robot[data-rolling="left"] .wheel { animation: wheel-spin 0.45s linear infinite reverse; }
+/* Thân hơi ngả về hướng đang lăn cho có cảm giác quán tính */
+.robot[data-rolling="right"] .robot-breath { animation: none; transform: rotate(3deg); transform-origin: 50% 100%; }
+.robot[data-rolling="left"] .robot-breath { animation: none; transform: rotate(-3deg); transform-origin: 50% 100%; }
+@keyframes wheel-spin { to { transform: rotate(360deg); } }
+
+@keyframes g-handshake { 0%, 100% { transform: rotate(-58deg); } 50% { transform: rotate(-42deg); } }
+@keyframes g-pat { 0%, 100% { transform: rotate(-190deg) scaleY(1.7); } 50% { transform: rotate(-182deg) scaleY(1.62); } }
+@keyframes g-pat-head { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-3deg) translateY(3px); } }
+@keyframes g-high-five { 0% { transform: rotate(0deg); } 40%, 70% { transform: rotate(-150deg); } 55% { transform: rotate(-140deg); } 100% { transform: rotate(-150deg); } }
+@keyframes g-clap-left { 0%, 100% { transform: rotate(-12deg); } 50% { transform: rotate(-38deg); } }
+@keyframes g-clap-right { 0%, 100% { transform: rotate(12deg); } 50% { transform: rotate(38deg); } }
+@keyframes g-up-left { from { transform: rotate(155deg); } to { transform: rotate(175deg); } }
+@keyframes g-up-right { from { transform: rotate(-155deg); } to { transform: rotate(-175deg); } }
+@keyframes g-hug-left { from { transform: rotate(-22deg); } to { transform: rotate(-34deg); } }
+@keyframes g-hug-right { from { transform: rotate(22deg); } to { transform: rotate(34deg); } }
+@keyframes g-nod { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(9px); } }
+@keyframes g-shake { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-7deg); } 75% { transform: rotate(7deg); } }
+@keyframes g-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+
+/* Con trỏ bàn tay khi rê vào đầu robot — gợi ý có thể "xoa đầu" */
+.robot .head { cursor: pointer; }
+
+/* Chế độ bắt chước: tắt hoạt ảnh tay để JS điều khiển trực tiếp; luôn hiện miệng dạng thanh sóng */
+.robot[data-mimic="true"] .arm { animation: none !important; transition: none; }
+.robot[data-mimic="true"] .mouth-smile, .robot[data-mimic="true"] .mouth-flat { display: none !important; }
+.robot[data-mimic="true"] .mouth-bars { display: inline !important; }
+.robot[data-mimic="true"] .robot-sway { animation: none; }
+
+/* ---------------------------------------------------------------------
+   KHUNG CHAT
+   --------------------------------------------------------------------- */
+.chat-panel {
+  display: flex; flex-direction: column; min-height: 0;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: opacity 2s;
+}
+.panel-head {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 14px 18px; border-bottom: 1px solid var(--panel-border);
+  font-family: Orbitron, sans-serif; letter-spacing: 2px; font-size: 13px;
+}
+.panel-head small { font-family: "Be Vietnam Pro", sans-serif; letter-spacing: 0; color: var(--muted); font-size: 12px; }
+.chat-log { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; scroll-behavior: smooth; }
+.chat-log::-webkit-scrollbar { width: 6px; }
+.chat-log::-webkit-scrollbar-thumb { background: rgba(61, 232, 255, 0.25); border-radius: 3px; }
+
+.msg { display: flex; flex-direction: column; max-width: 88%; animation: msg-in 0.3s ease; }
+.msg .bubble { padding: 10px 14px; border-radius: 16px; line-height: 1.5; font-size: 14.5px; white-space: pre-wrap; word-wrap: break-word; }
+.msg .meta { font-size: 11px; color: var(--muted); margin-top: 3px; padding: 0 6px; }
+.msg-user { align-self: flex-end; align-items: flex-end; }
+.msg-user .bubble { background: linear-gradient(135deg, #2a6cff, #7a4dff); border-bottom-right-radius: 4px; }
+.msg-mtd { align-self: flex-start; }
+.msg-mtd .bubble { background: rgba(61, 232, 255, 0.08); border: 1px solid rgba(61, 232, 255, 0.25); border-bottom-left-radius: 4px; }
+.msg-system { align-self: center; max-width: 95%; }
+.msg-system .bubble { background: transparent; color: var(--muted); font-size: 12.5px; text-align: center; padding: 4px 8px; }
+.msg-system .meta { display: none; }
+
+.chat-form { display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--panel-border); }
+.chat-form input {
+  flex: 1; min-width: 0;
+  padding: 11px 14px; border-radius: 12px;
+  border: 1px solid var(--panel-border);
+  background: rgba(0, 0, 0, 0.3); color: var(--text); font: inherit; font-size: 14px;
+  outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+}
+.chat-form input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(61, 232, 255, 0.15); }
+.chat-form button {
+  width: 46px; border: none; border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent), var(--violet)); color: #041022; font-size: 18px;
+}
+.hint { margin: 0; padding: 0 14px 12px; font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+/* ---------------------------------------------------------------------
+   HUD CAMERA
+   --------------------------------------------------------------------- */
+.vision-hud {
+  position: fixed; left: 16px; bottom: 16px; z-index: 20;
+  width: 260px;
+  background: rgba(5, 12, 26, 0.85);
+  border: 1px solid rgba(61, 232, 255, 0.35);
+  border-radius: 14px; overflow: hidden;
+  box-shadow: 0 0 24px rgba(61, 232, 255, 0.15);
+  backdrop-filter: blur(8px);
+  transition: opacity 2s;
+}
+.hud-head {
+  width: 100%; display: flex; justify-content: space-between; align-items: center;
+  padding: 7px 10px; border: none; background: rgba(61, 232, 255, 0.08);
+  font-family: Orbitron, sans-serif; font-size: 11px; letter-spacing: 2px; color: var(--accent);
+}
+.hud-presence { font-family: "Be Vietnam Pro", sans-serif; letter-spacing: 0; font-size: 11px; color: var(--muted); }
+.hud-presence[data-on="true"] { color: var(--ok); }
+.hud-view { position: relative; aspect-ratio: 4 / 3; background: #000; }
+.hud-view video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); filter: saturate(0.6) contrast(1.1); opacity: 0.85; }
+.hud-view canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.corner { position: absolute; width: 14px; height: 14px; border: 2px solid var(--accent); }
+.corner.tl { top: 6px; left: 6px; border-right: none; border-bottom: none; }
+.corner.tr { top: 6px; right: 6px; border-left: none; border-bottom: none; }
+.corner.bl { bottom: 6px; left: 6px; border-right: none; border-top: none; }
+.corner.br { bottom: 6px; right: 6px; border-left: none; border-top: none; }
+.hud-foot { display: flex; flex-direction: column; gap: 2px; padding: 6px 10px 8px; font-size: 11px; color: var(--muted); }
+.vision-hud.collapsed .hud-view, .vision-hud.collapsed .hud-foot { display: none; }
+.vision-hud.collapsed { width: 180px; }
+
+/* ---------------------------------------------------------------------
+   CÀI ĐẶT
+   --------------------------------------------------------------------- */
+.modal {
+  position: fixed; inset: 0; z-index: 50;
+  display: grid; place-items: center; padding: 16px;
+  background: rgba(2, 5, 12, 0.7); backdrop-filter: blur(6px);
+  opacity: 0; pointer-events: none; transition: opacity 0.25s;
+}
+.modal.show { opacity: 1; pointer-events: auto; }
+.modal-card {
+  width: min(460px, 100%); max-height: 90vh; overflow-y: auto;
+  background: #0b1530; border: 1px solid var(--panel-border); border-radius: var(--radius);
+  padding: 22px; display: flex; flex-direction: column; gap: 14px;
+}
+.modal-card h2 { margin: 0 0 4px; font-family: Orbitron, sans-serif; font-size: 16px; letter-spacing: 1px; }
+.modal-card label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--muted); }
+.modal-card textarea { resize: vertical; min-height: 64px; }
+#ai-fields [hidden] { display: none; }
+
+/* Thanh tiến độ tải não AI */
+.brain-loader {
+  width: 120px; height: 6px; border-radius: 3px; overflow: hidden;
+  background: rgba(255, 255, 255, 0.08); display: none;
+}
+.brain-loader.show { display: block; }
+.brain-loader div { height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--violet)); transition: width 0.3s; }
+
+/* Tin nhắn đang được AI viết dần */
+.msg.live .bubble::after { content: "▋"; margin-left: 2px; animation: blink-bit 0.8s infinite; color: var(--accent); }
+
+.modal-card input[type="text"], .modal-card input[type="password"], .modal-card select, .modal-card textarea {
+  padding: 10px 12px; border-radius: 10px; border: 1px solid var(--panel-border);
+  background: rgba(0, 0, 0, 0.35); color: var(--text); font: inherit; font-size: 14px;
+}
+#ai-fields { display: flex; flex-direction: column; gap: 14px; }
+#ai-fields[hidden] { display: none; }
+.modal-card .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.modal-card input[type="range"] { accent-color: var(--accent); }
+.note { margin: 0; font-size: 12px; color: var(--muted); line-height: 1.5; }
+.face-box { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; font-size: 14px; }
+.face-box b { color: var(--accent); }
+.modal-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; margin-top: 6px; }
+.modal-actions button { padding: 9px 14px; border-radius: 10px; font-size: 13px; }
+.ghost { background: transparent; border: 1px solid var(--panel-border); }
+.primary { border: none; background: linear-gradient(135deg, var(--accent), var(--violet)); color: #041022; font-weight: 700; }
+
+/* ---------------------------------------------------------------------
+   CHẾ ĐỘ NGỦ ĐÔNG (ru ngủ) — siêu tối + bầu trời sao
+   --------------------------------------------------------------------- */
+#starfield { position: fixed; inset: 0; z-index: 0; opacity: 0; transition: opacity 3s; pointer-events: none; }
+#starfield i { position: absolute; border-radius: 50%; background: #fff; animation: twinkle 3s ease-in-out infinite; }
+body.hibernate { background: radial-gradient(1000px 600px at 50% 110%, #0b1233 0%, #010207 60%); }
+body.hibernate #starfield { opacity: 1; }
+body.hibernate::before { opacity: 0; }
+body.hibernate .chat-panel, body.hibernate .topbar { opacity: 0.25; }
+body.hibernate .vision-hud { opacity: 0.15; }
+body.hibernate .robot-stage { filter: brightness(0.55) saturate(0.7); transition: filter 3s; }
+body.hibernate .stage-glow { opacity: 0.3; }
+body.hibernate .subtitle { color: #a9b6d9; }
+
+/* ---------------------------------------------------------------------
+   KEYFRAMES
+   --------------------------------------------------------------------- */
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse-text { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; text-shadow: 0 0 14px var(--accent); } }
+@keyframes breathe { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+@keyframes shadow { 0%, 100% { transform: scaleX(1); opacity: 1; } 50% { transform: scaleX(0.9); opacity: 0.7; } }
+@keyframes glow-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+@keyframes blink-bit { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0.25; } }
+@keyframes heartbeat { 0%, 100% { transform: scale(1); } 15% { transform: scale(1.18); } 30% { transform: scale(0.96); } 45% { transform: scale(1.1); } }
+@keyframes arm-idle-left { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(5deg); } }
+@keyframes arm-idle-right { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-5deg); } }
+@keyframes wave { 0%, 100% { transform: rotate(-140deg); } 50% { transform: rotate(-165deg); } }
+@keyframes gesture-left { 0%, 100% { transform: rotate(10deg); } 50% { transform: rotate(35deg); } }
+@keyframes dance-left { from { transform: rotate(20deg); } to { transform: rotate(120deg); } }
+@keyframes dance-right { from { transform: rotate(-120deg); } to { transform: rotate(-20deg); } }
+@keyframes sway { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+@keyframes float-up {
+  0% { transform: translate(0, 0) scale(0.6); opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: translate(var(--drift, 0px), -170px) scale(1.2); opacity: 0; }
+}
+@keyframes twinkle { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+@keyframes msg-in { from { opacity: 0; transform: translateY(6px); } }
+
+/* ---------------------------------------------------------------------
+   RESPONSIVE
+   --------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  body { overflow: auto; }
+  .app { height: auto; min-height: 100vh; }
+  .layout { grid-template-columns: 1fr; padding: 0 16px 16px; }
+  .topbar { flex-wrap: wrap; padding: 12px 16px; }
+  .chips { order: 3; margin-left: 0; width: 100%; }
+  .gear { margin-left: auto; }
+  .robot-stage { width: min(70vw, 320px); }
+  .chat-panel { height: 60vh; }
+  .vision-hud { width: 150px; left: 10px; bottom: 10px; }
+  .vision-hud .hud-foot { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+}
+
+/* =====================================================================
+   BIẾN HÌNH (data-form): normal | battle (chiến binh) | car (xe đua)
+   ===================================================================== */
+.car-svg { display: none; }
+.robot-svg, .car-svg { width: 100%; height: 100%; }
+.robot[data-form="car"] .robot-svg { display: none; }
+.robot[data-form="car"] .car-svg { display: block; overflow: visible; }
+
+/* Bộ giáp: ẩn ở dạng thường, bung ra (phóng to + hiện dần) khi thành chiến binh */
+.armor-part { opacity: 0; transform: scale(0.3); transform-box: fill-box; transform-origin: center; transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.2, 1.6, 0.4, 1); pointer-events: none; }
+.robot[data-form="battle"] .armor-part { opacity: 1; transform: scale(1); }
+/* Dạng chiến binh: đèn LED đỏ bất kể trạng thái nào */
+.robot[data-form="battle"][data-state] { --led: #ff3b3b; }
+.robot[data-form="battle"] .antenna-bulb { animation: glow-pulse 0.6s ease-in-out infinite; }
+
+/* Trong lúc biến hình: đầu thụt xuống thân, hai tay gập ngắn lại */
+.robot.transforming .head { transform: translateY(80px) scale(0.7) !important; animation: none !important; transition: transform 0.5s ease-in; }
+.robot.transforming .arm { transform: scaleY(0.35) !important; animation: none !important; transition: transform 0.5s ease-in; }
+.robot.transforming .car-body { transform: scale(0.6); transform-box: fill-box; transform-origin: center; transition: transform 0.4s ease-in; }
+
+/* Xe đua: chớp mắt, đèn pha nháy khi nói, lửa ống xả khi chạy, quay đầu theo hướng chạy */
+.car-eye { transform-box: fill-box; transform-origin: center; transition: transform 0.08s; }
+.robot.blink .car-eye { transform: scaleY(0.1); }
+.robot[data-speaking="true"] .car-headlight { animation: glow-pulse 0.25s ease-in-out infinite; }
+.car-flame { opacity: 0; transition: opacity 0.2s; }
+.robot[data-rolling] .car-flame { opacity: 1; animation: flame 0.12s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: right center; }
+.car-svg { transition: transform 0.35s ease; }
+.robot[data-facing="left"] .car-svg { transform: scaleX(-1); }
+.robot[data-form="car"] .car-body { animation: car-idle 1.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center bottom; }
+@keyframes flame { from { transform: scaleX(0.7); } to { transform: scaleX(1.25); } }
+@keyframes car-idle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+
+/* Pháo tay: giơ tay phải ngang ra để bắn */
+.robot[data-gesture="cannon"] .arm-right { animation: none !important; transform: rotate(-90deg) !important; }
+.robot[data-gesture="cannon"] .robot-sway { transform: rotate(-3deg); }
+
+/* Nạp năng lượng laze: mắt và lõi ngực sáng rực */
+.robot.charging .eyes, .robot.charging .chest-core, .robot.charging .car-headlight { filter: brightness(2.2) drop-shadow(0 0 8px var(--led)); }
+.robot.charging .chest-core { animation: glow-pulse 0.12s ease-in-out infinite; }
+
+/* Chớp sáng khi biến hình xong */
+.stage-flash {
+  position: absolute; inset: -20%; z-index: 6; pointer-events: none;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(160, 235, 255, 0.5) 30%, transparent 65%);
+  animation: stage-flash 0.6s ease-out forwards;
+}
+@keyframes stage-flash { from { opacity: 1; transform: scale(0.6); } to { opacity: 0; transform: scale(1.3); } }
+.p-spark { color: #ffe36b; text-shadow: 0 0 10px rgba(255, 220, 90, 0.9); }
+
+/* =====================================================================
+   LAZE (vẽ trên lớp phủ toàn màn hình, toạ độ tính bằng JS trong fx.js)
+   ===================================================================== */
+.fx-layer { position: fixed; inset: 0; pointer-events: none; z-index: 50; overflow: hidden; }
+.laser-beam {
+  position: absolute; transform-origin: 0 50%; border-radius: 999px;
+  background: linear-gradient(to bottom, transparent 0%, var(--laser) 22%, #ffffff 45%, #ffffff 55%, var(--laser) 78%, transparent 100%);
+  box-shadow: 0 0 12px var(--laser), 0 0 28px var(--laser);
+  animation: laser-flicker 0.06s linear infinite alternate;
+  transition: opacity 0.25s;
+}
+.laser-hit {
+  position: absolute; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 0%, var(--laser) 35%, transparent 70%);
+  animation: laser-hit 0.1s linear infinite alternate; transition: opacity 0.25s;
+}
+.laser-beam.off, .laser-hit.off { opacity: 0; }
+.laser-spark {
+  position: absolute; width: 5px; height: 5px; border-radius: 50%; background: #fff;
+  box-shadow: 0 0 8px var(--laser), 0 0 14px var(--laser);
+  animation: laser-spark 0.55s ease-out forwards;
+}
+.laser-scorch {
+  position: absolute; width: 34px; height: 9px; margin: -4px 0 0 -17px; border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(255, 140, 60, 0.75), rgba(40, 20, 10, 0.5) 60%, transparent 75%);
+  animation: laser-scorch 1.6s ease-out forwards;
+}
+@keyframes laser-flicker { from { opacity: 0.85; } to { opacity: 1; } }
+@keyframes laser-hit { from { transform: scale(0.85); } to { transform: scale(1.15); } }
+@keyframes laser-spark { to { transform: translate(var(--dx), var(--dy)); opacity: 0; } }
+@keyframes laser-scorch { 0% { opacity: 1; } 100% { opacity: 0; transform: scaleX(1.4); } }
+
+/* =====================================================================
+   DẠNG MÈO MÁY (data-form="cat") — thiết kế riêng của MTD
+   ===================================================================== */
+.cat-part { opacity: 0; transform: scale(0.2); transform-box: fill-box; transform-origin: center bottom; transition: opacity 0.45s ease, transform 0.5s cubic-bezier(0.2, 1.6, 0.4, 1); pointer-events: none; }
+.robot[data-form="cat"] .cat-part { opacity: 1; transform: scale(1); }
+.robot[data-form="cat"][data-state] { --led: #ffb347; }
+/* Mèo không có ăng-ten */
+.robot[data-form="cat"] .head > line, .robot[data-form="cat"] .antenna-bulb { display: none; }
+/* Ria mép mảnh hơn nét LED thường */
+.whisker { stroke-width: 3; }
+/* Miệng "ω" của mèo thay cho miệng cười khi không nói */
+.robot[data-form="cat"][data-speaking="false"] .mouth-smile,
+.robot[data-form="cat"][data-speaking="false"] .mouth-wavy { display: none; }
+.robot[data-form="cat"][data-speaking="false"] .mouth-cat { display: inline; }
+/* Đuôi vẫy liên tục, vui thì vẫy nhanh */
+.robot[data-form="cat"] .cat-tail { transform-origin: 0% 100%; animation: tail-wag 1.6s ease-in-out infinite; }
+.robot[data-form="cat"][data-state="greeting"] .cat-tail,
+.robot[data-form="cat"][data-state="singing"] .cat-tail { animation-duration: 0.5s; }
+.robot[data-form="cat"][data-state="sleeping"] .cat-tail { animation: none; }
+/* Tai giật giật thỉnh thoảng */
+.robot[data-form="cat"] .cat-ears { animation: ear-twitch 4s ease-in-out infinite; transform-origin: center bottom; }
+@keyframes tail-wag { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(10deg); } }
+@keyframes ear-twitch { 0%, 88%, 100% { transform: scale(1); } 92% { transform: scale(1.06, 0.92); } 96% { transform: scale(0.97, 1.04); } }

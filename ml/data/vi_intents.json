@@ -1,0 +1,313 @@
+{
+  "_note": "Câu mẫu tiếng Việt tự soạn cho dự án MTD (không lấy từ nguồn có bản quyền). 'train' để huấn luyện, 'test' để chấm điểm — hai phần KHÔNG trùng nhau.",
+  "train": {
+    "sing": [
+      "hát cho tớ nghe một bài đi",
+      "cậu có thể hát không",
+      "cho tớ nghe một giai điệu vui",
+      "ngân nga một bài nào",
+      "trình diễn một ca khúc đi",
+      "tớ muốn nghe cậu ca một bài",
+      "làm một bài nhạc tặng tớ đi",
+      "hát bài gì đó vui vui đi",
+      "biểu diễn âm nhạc cho tớ xem",
+      "cất giọng hát nào",
+      "sáng tác một bài về mùa hè đi",
+      "hát một bài về tình bạn"
+    ],
+    "story": [
+      "kể tớ nghe một câu chuyện",
+      "cậu biết chuyện cổ tích nào không",
+      "có chuyện gì hay kể tớ nghe với",
+      "kể một truyện ngắn đi",
+      "tớ muốn nghe chuyện ngày xửa ngày xưa",
+      "kể chuyện về công chúa đi",
+      "kể một câu chuyện cảm động",
+      "cậu có truyện gì thú vị không",
+      "nói tớ nghe một câu chuyện phiêu lưu",
+      "kể chuyện về con thỏ và con rùa"
+    ],
+    "lullaby": [
+      "tớ buồn ngủ quá rồi",
+      "giúp tớ ngủ với",
+      "tớ không ngủ được",
+      "mắt tớ díp lại rồi",
+      "tớ muốn đi ngủ",
+      "ru tớ ngủ đi",
+      "đêm nay khó ngủ quá",
+      "tớ cần nghỉ ngơi đi ngủ đây",
+      "bật nhạc nhẹ cho tớ ngủ",
+      "tớ ngáp mãi thôi"
+    ],
+    "riddle": [
+      "đố tớ một câu đi",
+      "cho tớ một câu đố mẹo",
+      "có câu đố nào khó không",
+      "thử thách trí tuệ tớ đi",
+      "ra câu hỏi đố vui",
+      "chơi giải đố nào",
+      "đố mẹo đi cậu",
+      "hỏi tớ một câu hóc búa"
+    ],
+    "joke": [
+      "kể chuyện cười đi",
+      "làm tớ cười với",
+      "nói gì đó buồn cười đi",
+      "có chuyện hài nào không",
+      "pha trò cho tớ vui",
+      "kể một câu đùa",
+      "chọc tớ cười đi",
+      "tớ cần cười một chút"
+    ],
+    "hiphop": [
+      "nhảy hip hop đi",
+      "quẩy theo nhạc rap đi",
+      "nhảy một điệu thật ngầu",
+      "biểu diễn break dance",
+      "nhảy kiểu robot đi",
+      "lắc lư theo beat nào",
+      "cho tớ xem cậu quẩy",
+      "nhảy thật cháy đi",
+      "múa một điệu sôi động",
+      "nhảy popping cho tớ xem"
+    ],
+    "flip": [
+      "lộn vòng đi",
+      "nhào lộn một vòng",
+      "cậu lộn ngược được không",
+      "lộn một vòng trên không",
+      "làm động tác santo",
+      "nhào lộn cho tớ xem",
+      "biểu diễn lộn nhào",
+      "lộn người ra sau đi",
+      "bật nhảy lộn vòng",
+      "làm một cú lộn ngoạn mục"
+    ],
+    "spin": [
+      "xoay vòng đi",
+      "quay tròn một vòng",
+      "xoay người đi",
+      "quay quanh tại chỗ",
+      "xoay tít đi",
+      "quay một vòng cho tớ xem",
+      "xoay như con quay"
+    ],
+    "jump": [
+      "nhảy lên cao đi",
+      "bật lên nào",
+      "nhảy cao xem nào",
+      "nhún nhảy lên đi",
+      "bật cao lên",
+      "nhảy tưng tưng",
+      "nhảy lên một cái"
+    ],
+    "move_left": [
+      "đi sang trái",
+      "chạy qua bên trái",
+      "dịch sang trái một chút",
+      "lăn qua trái",
+      "sang bên trái đi",
+      "di chuyển về phía trái"
+    ],
+    "move_right": [
+      "đi sang phải",
+      "chạy qua bên phải",
+      "dịch sang phải một chút",
+      "lăn qua phải",
+      "sang bên phải đi",
+      "di chuyển về phía phải"
+    ],
+    "come_here": [
+      "lại đây với tớ",
+      "đến gần tớ đi",
+      "lại gần đây nào",
+      "về đây",
+      "tiến lại gần",
+      "chạy lại chỗ tớ",
+      "quay về giữa đi",
+      "về chỗ cũ đi"
+    ],
+    "patrol": [
+      "chạy một vòng đi",
+      "đi dạo quanh đi",
+      "chạy quanh màn hình",
+      "đi tuần tra đi",
+      "di chuyển khắp nơi",
+      "chạy qua chạy lại",
+      "dạo một vòng xem nào",
+      "chạy nhảy tung tăng đi"
+    ],
+    "time": [
+      "mấy giờ rồi",
+      "giờ là mấy giờ vậy",
+      "cho tớ biết giờ",
+      "bây giờ là lúc nào",
+      "đồng hồ chỉ mấy giờ",
+      "xem giờ giúp tớ"
+    ],
+    "chat": [
+      "hôm nay tớ đi học về muộn",
+      "cậu thích màu gì",
+      "tớ vừa ăn phở xong",
+      "cậu nghĩ gì về trí tuệ nhân tạo",
+      "trời hôm nay đẹp nhỉ",
+      "tớ có một con mèo",
+      "cuối tuần này tớ đi chơi",
+      "cậu có bạn bè không",
+      "tớ đang học lập trình python",
+      "bóng đá tối nay hay lắm",
+      "cậu có biết nấu ăn không",
+      "tớ thích đọc sách",
+      "mẹ tớ làm giáo viên",
+      "tớ vừa thi xong môn toán",
+      "cậu sống ở đâu",
+      "robot có cảm xúc không",
+      "tớ muốn trở thành kỹ sư",
+      "hôm qua tớ đi xem phim",
+      "cậu bao nhiêu tuổi",
+      "tại sao trời lại mưa",
+      "kể về cậu đi",
+      "tớ thấy hơi đói",
+      "em gái tớ rất nghịch",
+      "cậu thích mùa nào nhất",
+      "trái đất quay quanh mặt trời đúng không",
+      "lớp tớ có bốn mươi bạn",
+      "cậu có thích tớ không",
+      "tớ đang làm bài tập",
+      "ngày mai tớ được nghỉ",
+      "con mèo nhà tớ tên là Mướp",
+      "cậu biết thủ đô của pháp không",
+      "tớ hay chơi cầu lông",
+      "ăn gì cho khỏe nhỉ",
+      "học tiếng anh thế nào cho giỏi",
+      "tớ thích nghe nhạc của sơn tùng",
+      "cậu được tạo ra như thế nào",
+      "hôm nay tớ được điểm mười",
+      "bạn tớ sắp chuyển trường",
+      "máy tính của tớ hơi chậm",
+      "chúng mình nói chuyện chút nhé",
+      "ừ tớ hiểu rồi",
+      "thế à",
+      "không sao đâu",
+      "cảm ơn cậu nhé",
+      "xin chào",
+      "cậu khỏe không",
+      "tớ về rồi đây",
+      "ok luôn",
+      "vậy thì tốt quá",
+      "tớ đồng ý",
+      "để tớ nghĩ đã",
+      "hay đấy"
+    ],
+    "laser": [
+      "bắn tia laze đi",
+      "phóng tia sáng từ mắt",
+      "cho tớ xem cậu bắn laser",
+      "khai hỏa nào",
+      "bắn một phát thật mạnh",
+      "dùng súng laze đi",
+      "chiếu tia sáng ra đi",
+      "mắt cậu bắn ra tia được không",
+      "bắn đạn ánh sáng",
+      "tung chiêu laze"
+    ],
+    "transform": [
+      "biến hình đi",
+      "cậu biến đổi hình dạng được không",
+      "biến thành thứ khác đi",
+      "đổi hình dạng nào",
+      "lột xác đi",
+      "chuyển sang hình dạng khác",
+      "hóa thân thành cái gì đó đi",
+      "biến thành siêu robot đi",
+      "thay hình đổi dạng xem nào",
+      "cho tớ xem cậu biến hình"
+    ]
+  },
+  "test": {
+    "sing": [
+      "cậu hát tặng tớ một bài được không",
+      "tớ muốn nghe nhạc do cậu hát",
+      "trổ tài ca hát đi"
+    ],
+    "story": [
+      "kể chuyện gì đó cho tớ nghe đi",
+      "có câu chuyện nào hay không cậu",
+      "tớ muốn nghe một truyện cổ"
+    ],
+    "lullaby": [
+      "tớ mệt và buồn ngủ lắm",
+      "làm sao để ngủ ngon bây giờ",
+      "tớ sắp ngủ gật rồi"
+    ],
+    "riddle": [
+      "có câu đố nào không",
+      "đố vui một câu xem",
+      "ra đề đố tớ đi"
+    ],
+    "joke": [
+      "kể gì đó hài hước đi",
+      "làm tớ bật cười đi",
+      "cậu biết câu chuyện vui nào không"
+    ],
+    "hiphop": [
+      "quẩy hip hop cho tớ xem",
+      "nhảy theo điệu rap đi",
+      "trình diễn một điệu nhảy đường phố"
+    ],
+    "flip": [
+      "cậu nhào lộn được không",
+      "lộn ngược người một vòng xem",
+      "làm cú lộn vòng đi"
+    ],
+    "spin": [
+      "quay vòng tròn đi",
+      "xoay một vòng nào",
+      "quay người một vòng đi"
+    ],
+    "jump": [
+      "bật nhảy lên đi",
+      "nhảy lên cao nào",
+      "nhảy một cái thật cao"
+    ],
+    "move_left": [
+      "qua trái chút đi",
+      "lăn sang bên trái nào"
+    ],
+    "move_right": [
+      "qua phải chút đi",
+      "lăn sang bên phải nào"
+    ],
+    "come_here": [
+      "đến đây nào",
+      "lại gần tớ hơn đi"
+    ],
+    "patrol": [
+      "chạy loanh quanh đi",
+      "đi một vòng quanh đây"
+    ],
+    "time": [
+      "bây giờ mấy giờ",
+      "xem giùm tớ mấy giờ rồi"
+    ],
+    "chat": [
+      "tớ vừa đi bơi về",
+      "cậu có thích ăn kem không",
+      "hôm nay lớp tớ kiểm tra",
+      "anh tớ đang đi làm",
+      "tớ muốn mua một chiếc xe đạp",
+      "sao biển lại mặn",
+      "ừm được thôi",
+      "tớ thích chơi game",
+      "hôm nay trời nóng quá"
+    ],
+    "laser": [
+      "cậu bắn tia sáng được không",
+      "phóng laze vào bức tường đi"
+    ],
+    "transform": [
+      "đổi dạng đi cậu",
+      "cậu hóa thân được không"
+    ]
+  }
+}

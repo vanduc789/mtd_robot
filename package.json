@@ -1,0 +1,12 @@
+{
+  "name": "mtd-robot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MTD - robot cơ khí ảo rảnh tay: nhìn qua camera, nghe, nói, hát, kể chuyện, an ủi.",
+  "type": "module",
+  "scripts": {
+    "start": "npx --yes serve -l 5500 .",
+    "start:py": "python -m http.server 5500",
+    "test": "node --test tests/"
+  }
+}

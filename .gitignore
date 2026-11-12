@@ -1,0 +1,20 @@
+# ==== KHÔNG BAO GIỜ đưa lên mạng ====
+# Chứa API key Gemini của chủ nhân
+config.local.js
+
+# Môi trường Python (2,6 GB) và dữ liệu tải về — ai cần thì tự tạo theo README
+ml/.venv/
+ml/cache/
+__pycache__/
+*.pyc
+
+# Mô hình lớn (vượt giới hạn 100 MB/file của GitHub). Bản công khai tự tải từ Hugging Face.
+models/Xenova/
+models/huuquyet/
+models/PhoWhisper-base-ct2/
+models/PhoWhisper-small-ct2/
+
+# Linh tinh
+node_modules/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,19 @@
+{
+  "_note": "Câu tiếng Việt tự soạn. 'train' bổ sung cho bộ GoEmotions (tiếng Anh) để mô hình quen tiếng Việt; 'test' dùng để chấm điểm, không trùng 'train'.",
+  "train": {
+    "happy": ["hôm nay tớ vui lắm", "tớ được điểm cao rồi", "sướng quá đi mất", "tớ hạnh phúc quá", "cả nhà tớ đi du lịch, thích ghê", "tớ vừa thắng trận đấu", "hihi tớ phấn khích quá", "mọi thứ đều tuyệt vời", "tớ được mẹ khen", "yêu đời quá cậu ơi", "tớ cười suốt cả ngày", "tin vui nè, tớ đỗ rồi"],
+    "sad": ["tớ buồn quá", "tớ muốn khóc", "hôm nay tệ thật", "tớ bị điểm kém", "chú chó của tớ mất rồi", "tớ thấy thất vọng về bản thân", "chẳng có gì như ý cả", "tớ nhớ ông bà quá", "bạn thân tớ chuyển đi xa rồi", "lòng tớ nặng trĩu", "tớ thấy trống rỗng", "tớ thất bại rồi"],
+    "angry": ["tớ tức lắm", "bực mình quá đi", "nó làm tớ điên lên", "tớ ghét cái kiểu đó", "thật không thể chịu nổi", "sao lại bất công như vậy", "tớ cáu lắm rồi đấy", "đừng có làm phiền tớ", "tức muốn nổ tung", "khó chịu thật sự", "nó lấy đồ của tớ mà không hỏi", "tớ phát cáu với em trai"],
+    "anxious": ["tớ lo quá", "mai thi rồi tớ run lắm", "tớ sợ bị điểm kém", "hồi hộp quá đi", "tớ thấy bất an", "áp lực quá cậu ơi", "tớ sợ bóng tối", "không biết mọi chuyện có ổn không", "tim tớ đập nhanh quá", "tớ căng thẳng vì bài thuyết trình", "lỡ tớ làm sai thì sao", "tớ sợ bị mắng"],
+    "surprised": ["ôi thật á", "không thể tin được", "trời ơi bất ngờ quá", "thật vậy sao", "wow cái gì thế này", "ủa sao lại thế được", "tớ không ngờ luôn đấy", "ơ kìa lạ quá", "thật hả cậu", "ngạc nhiên quá đi"],
+    "neutral": ["tớ đang ăn cơm", "hôm nay là thứ hai", "tớ đi học bằng xe đạp", "cậu tên là gì", "lớp tớ có ba mươi bạn", "tớ đang đọc sách", "bây giờ là buổi chiều", "tớ ở hà nội", "mai tớ đi học", "cái bàn màu nâu", "tớ vừa uống nước", "cậu làm được những gì"]
+  },
+  "test": {
+    "happy": ["tớ vui ghê luôn", "hôm nay là ngày tuyệt nhất", "tớ được tặng quà, thích quá", "tớ thấy hạnh phúc khi ở bên gia đình", "yeah tớ làm được rồi", "tớ đang rất phấn khởi", "cuối cùng tớ cũng xong bài, nhẹ cả người", "cảm ơn cậu, tớ vui lắm"],
+    "sad": ["tớ thấy buồn và cô đơn", "chuyện hôm nay làm tớ đau lòng", "tớ bị bạn bỏ rơi", "tớ chán nản quá", "mọi người không hiểu tớ", "tớ vừa chia tay bạn thân", "tớ thấy mình vô dụng", "nước mắt cứ rơi"],
+    "angry": ["tớ giận cậu ấy lắm", "thật là quá đáng", "tớ không chịu nổi nữa rồi", "đồ đáng ghét", "sao cứ làm phiền tớ mãi thế", "tớ đang rất bực", "cái máy tính ngu ngốc này", "tớ điên mất thôi"],
+    "anxious": ["tớ sợ ngày mai lắm", "tớ lo lắng cho bài kiểm tra", "liệu tớ có làm được không", "tớ thấy hoảng quá", "nghĩ đến kỳ thi là tớ run", "tớ sợ mọi người cười tớ", "tớ không yên tâm chút nào", "bồn chồn quá"],
+    "surprised": ["ơ thật không vậy", "trời đất ơi", "tớ sốc luôn đó", "ủa vậy hả", "bất ngờ thật đấy", "không ngờ cậu biết điều đó"],
+    "neutral": ["tớ vừa về đến nhà", "hôm nay tớ mặc áo xanh", "chiều nay tớ học toán", "nhà tớ có hai tầng", "tớ đang ngồi ở bàn học", "cậu có biết mấy giờ rồi không", "tớ dùng máy tính để học", "sáng nay trời nhiều mây"]
+  }
+}
