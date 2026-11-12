@@ -12,7 +12,10 @@ class FakeUtterance {
 const fakeSynth = {
   speaking: false,
   pending: false,
-  getVoices: () => [],
+  voiceList: [{ name: "Giọng Việt thử", lang: "vi-VN", voiceURI: "vi-test" }],
+  getVoices() {
+    return this.voiceList;
+  },
   addEventListener() {},
   cancel() {},
   speak(u) {
@@ -140,4 +143,32 @@ test("hát theo nốt: tốc độ phát luôn trong 0,8–1,25 để chữ rõ,
   rates.forEach((r) => assert.ok(r >= 0.8 && r <= 1.25, `rate ${r}`));
   assert.ok(rates[0] < rates[1] && rates[1] < rates[2], "nốt cao hơn vẫn phải cao hơn");
   assert.deepEqual(singingRates([null], ["C5"]), [1]);
+});
+
+test("trình duyệt không có giọng tiếng Việt -> đợi giọng AI Piper, KHÔNG đọc bằng giọng tiếng Anh", async () => {
+  const saved = fakeSynth.voiceList;
+  fakeSynth.voiceList = [{ name: "English Voice", lang: "en-US", voiceURI: "en" }];
+  spokenLog.length = 0;
+  try {
+    const voice = new Voice();
+    const played = [];
+    // Giọng Piper giả: tải mất 50 ms rồi "đọc" từng câu
+    const piper = {
+      ready: false,
+      load() {
+        return new Promise((r) => setTimeout(() => ((this.ready = true), r()), 50));
+      },
+      synthesize: async (text) => text,
+      play: async (text) => played.push(text),
+      stopPlayback() {},
+      level: () => 0,
+      singing: [],
+    };
+    voice.useNeural(piper);
+    await voice.speak("Xin chào, tớ là MTD.");
+    assert.deepEqual(spokenLog, [], "không được đọc bằng giọng tiếng Anh");
+    assert.deepEqual(played, ["Xin chào, tớ là MTD."]);
+  } finally {
+    fakeSynth.voiceList = saved;
+  }
 });

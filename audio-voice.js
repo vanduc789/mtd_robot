@@ -476,7 +476,9 @@ export class Voice {
   }
 
   shouldUseNeural() {
-    if (this.engine === "browser" || !this.neural?.ready) return false;
+    if (!this.neural?.ready) return false;
+    // Trình duyệt không có giọng Việt -> dùng Piper kể cả khi người dùng chọn "giọng trình duyệt" (tránh giọng nước ngoài).
+    if (this.engine === "browser") return !this.browserVoiceIsVietnamese;
     if (this.engine === "neural") return true;
     return !this.hasNaturalBrowserVoice;
   }
@@ -538,6 +540,33 @@ export class Voice {
     if (this.speaking === on) return;
     this.speaking = on;
     this.onSpeakingChange(on);
+  }
+
+  /** Giọng trình duyệt đang chọn có phải tiếng Việt không. */
+  get browserVoiceIsVietnamese() {
+    return Boolean(this.voice && this.voice.lang.replace("_", "-").toLowerCase().startsWith("vi"));
+  }
+
+  /**
+   * Trình duyệt KHÔNG có giọng tiếng Việt (ví dụ Chrome trên Windows) hoặc danh sách giọng chưa tải xong:
+   * nếu đọc ngay, máy sẽ dùng giọng TIẾNG ANH đọc chữ Việt -> nghe như tiếng nước ngoài.
+   * Vì vậy: thử tải lại danh sách giọng; vẫn không có giọng Việt thì ĐỢI giọng AI Piper (tiếng Việt) tải xong.
+   */
+  async ensureVietnameseVoice() {
+    if (this.engine === "neural" && this.neural?.ready) return;
+    if (this.supported && !this.browserVoiceIsVietnamese) {
+      // Danh sách giọng thường được nạp chậm vài trăm ms sau khi mở trang.
+      for (let i = 0; i < 10 && !this.browserVoiceIsVietnamese; i++) {
+        this.loadVoices();
+        if (!this.browserVoiceIsVietnamese) await new Promise((r) => setTimeout(r, 150));
+      }
+    }
+    if (this.browserVoiceIsVietnamese || !this.neural || this.neural.ready) return;
+    try {
+      await Promise.race([this.neural.load(), new Promise((_, reject) => setTimeout(() => reject(new Error("quá lâu")), 25000))]);
+    } catch (err) {
+      console.warn("[MTD] Không có giọng tiếng Việt nào dùng được:", err);
+    }
   }
 
   /** Đọc một câu bằng giọng trình duyệt. Promise xong khi đọc hết câu (hoặc bị huỷ). */
@@ -607,6 +636,8 @@ export class Voice {
     };
 
     (async () => {
+      await this.ensureVietnameseVoice();
+      if (!alive()) return finish();
       if (this.shouldUseNeural()) {
         // Piper: tổng hợp câu kế tiếp trong lúc đang phát câu hiện tại.
         const playbackRate = Math.max(0.7, Math.min(1.5, rate * (1 + (pitch - 1) * 0.15)));
