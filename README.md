@@ -1,6 +1,6 @@
 # 🤖 MTD — Robot bạn thân trên trình duyệt
 
-**▶ Dùng thử online:** https://vanduc789.github.io/mtd-robot/ (dán key Gemini miễn phí của bạn vào ⚙ để MTD thông minh hơn — lấy tại https://aistudio.google.com/apikey)
+**▶ Dùng thử online:** https://vanduc789.github.io/mtd_robot/ (dán key Gemini miễn phí của bạn vào ⚙ để MTD thông minh hơn — lấy tại https://aistudio.google.com/apikey)
 
 
 MTD là một **robot cơ khí ảo** (thân kim loại, bảng mạch, khớp nối, màn hình LED trên mặt). Cậu không cần bấm nút nào:
